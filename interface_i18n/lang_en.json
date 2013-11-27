@@ -1,0 +1,4 @@
+{
+"mainModule": "Main module",
+"SmthBuyPearsAndApples": "{1,date:fullDate} {2} bought {4} {4|pear|pear|pears} и {5|* apple|* apples|a lot of apples}"
+}
