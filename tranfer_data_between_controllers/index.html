@@ -2,15 +2,31 @@
 <html ng-app="demoApp">
 <head>
     <meta charset="utf-8">
-    <title>Router demo</title>
+    <title>Transfer controller's data demo</title>
 
     <script src="../_lib/angular/angular.min.js"></script>
-    <script src="../_lib/angular/angular-route.min.js"></script>
 
     <script src="js/app.js"></script>
 
 </head>
 <body>
-    <div ng-view="main">Загрузка...</div>
+    <h2>Передача данных между контроллерами</h2>
+
+    <h4>через вложенные области видимости</h4>
+    <div ng-controller="InputCtrl"><input ng-model="data.title"/>
+        <div ng-controller="OutputCtrl">{{newData.title}}</div>
+    </div>
+
+    <h4>через общий сервис</h4>
+    <div ng-controller="Input1Ctrl"><input ng-model="data.title"/></div>
+    <div ng-controller="Output1Ctrl">{{data.title}}</div>
+
+    <h4>рассылкой через $rootScope</h4>
+    <div ng-controller="Input2Ctrl"><input ng-model="title"/></div>
+    <div ng-controller="Output2Ctrl">{{title}}</div>
+
+    <h4>слушанием $rootScope</h4>
+    <div ng-controller="Input3Ctrl"><input ng-model="title"/></div>
+    <div ng-controller="Output3Ctrl">{{title}}</div>
 </body>
 </html>

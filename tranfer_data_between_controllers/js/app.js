@@ -1,61 +1,65 @@
 'use strict';
 
-angular.module('demoApp', ['ngResource', 'ngRoute'])
+angular.module('demoApp', [])
 
-    .config(['$routeProvider', function ($routeProvider) {
-
-        //Роутинг
-        $urlRouterProvider
-            .when('/', {
-                template: 'Error 404'
-            })
-            .when('/:cityId/news', {
-                template: '{{Global.city}} News'
-            })
-            .when('/news', {
-                template: '{{Global.city}} News'
-            })
-            .otherwise({
-                redirectTo: '/'
-            });
+    //1. через вложенные области видимости
+    .controller('InputCtrl', ['$scope', function ($scope) {
+        $scope.data = {title: 'какой-то текст'}
     }])
 
-    .run(['$rootScope', '$state', 'Global', function ($rootScope, $state, Global) {
+    .controller('OutputCtrl', ['$scope', function ($scope) {
 
-        //Отлавливаем изменения города
-        $rootScope.Global = Global;
-        $rootScope.$watch('Global.city', function (newValue, oldValue) {
+        $scope.newData = $scope.data; //$scope только для записи. Так лучше не делать
+    }])
 
-            if (newValue && !$state.current.abstract) {
 
-                $state.go($state.current.name, {cityId: newValue})
-            }
-        });
-        
-        //Отлавливаем переходы роутера
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+    //2. через общий сервис
+    .value('Data', {
+        title: 'какой-то текст'
+    })
 
-          if (toParams.cityId && toParams.cityId !== Global.city) {
-              //Берем город из адресной строки
-              Global.city = toParams.cityId;
+    .controller('Input1Ctrl', ['$scope', 'Data', function ($scope, Data) {
 
-          } else if (!Global.city) {
-              //Пытаемся узнать город пользователя
+        $scope.data = Data;
+    }])
 
-              if (toState.url !== '/') {
-                  //Если был правильный переход
-                  event.preventDefault();
-              }
-              //Получаем код города
-              setTimeout(function () {
-                  Global.city = 'spb';
-                  $state.go(toState, toParams);
-              }, 1000);
-          }
+    .controller('Output1Ctrl', ['$scope', 'Data', function ($scope, Data) {
+
+        $scope.data = Data;
+    }])
+
+
+    //3. рассылкой через $rootScope
+    .controller('Input2Ctrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
+
+        $scope.title = 'какой-то текст';
+
+        $scope.$watch('title', function (newVal) {
+            $rootScope.$broadcast('titleEvent2', {title: newVal})
         })
     }])
-    
-    //Сервисы
-    .value('Global', {
-        city: null
-    })
+
+    .controller('Output2Ctrl', ['$scope', function ($scope) {
+
+        $scope.$on('titleEvent2', function (e, arg) {
+            $scope.title = arg.title;
+        })
+    }])
+
+
+    //4. слушанием $rootScope ($rootScope нельзя удалить, поэтому обработчик будет висеть всегда!)
+    .controller('Input3Ctrl', ['$scope',  function ($scope) {
+
+        $scope.title = 'какой-то текст';
+
+        $scope.$watch('title', function (newVal) {
+            $scope.$emit('titleEvent3', {title: newVal});
+        })
+    }])
+
+    .controller('Output3Ctrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
+
+        $rootScope.$on('titleEvent3', function (e, arg) {
+            $scope.title = arg.title;
+        })
+    }])
