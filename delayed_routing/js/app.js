@@ -2,7 +2,7 @@
 
 angular.module('demoApp', ['ui.router'])
 
-    .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider, $location) {
+    .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
         //Роутинг
         $urlRouterProvider.otherwise('/');
