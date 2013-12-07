@@ -47,7 +47,7 @@ angular.module('demoApp', [])
     }])
 
 
-    //4. слушанием $rootScope ($rootScope нельзя удалить, поэтому обработчик будет висеть всегда!)
+    //4. слушанием $rootScope (обработчик придется снимать вручную)
     .controller('Input3Ctrl', ['$scope',  function ($scope) {
 
         $scope.title = 'какой-то текст';
@@ -59,7 +59,9 @@ angular.module('demoApp', [])
 
     .controller('Output3Ctrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
 
-        $rootScope.$on('titleEvent3', function (e, arg) {
+        var killListener = $rootScope.$on('titleEvent3', function (e, arg) {
             $scope.title = arg.title;
         })
+        
+        //killListener() //$rootScope нельзя удалить, поэтому обработчик нужно снимать вручную
     }])
